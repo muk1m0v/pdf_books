@@ -1,24 +1,21 @@
 import asyncio
-import logging
-
+from os import getenv
 from aiogram import Bot, Dispatcher
+from dotenv import load_dotenv
+from color.style import *
+from handlers.route import router
+from database.db import init_tables
 
-from config import load_settings
-from handlers import routers
+load_dotenv()
+bot = Bot(token=getenv('BOT_TOKEN'))
 
+dp = Dispatcher()
 
-async def main() -> None:
-    logging.basicConfig(level=logging.INFO)
+async def main():
+    print(lblue + 'Bot working ■■■■■■■■■■■■■■■■ 100%' + reset)
 
-    settings = load_settings()
-    bot = Bot(token=settings.bot_token)
-    dispatcher = Dispatcher()
+    init_tables()
+    await dp.include_router(router=router)
 
-    for router in routers:
-        dispatcher.include_router(router)
-
-    await dispatcher.start_polling(bot)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main())

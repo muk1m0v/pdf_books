@@ -1,13 +1,13 @@
-from pathlib import Path
-
 from pypdf import PdfReader
+from io import BytesIO
 
-
-def extract_pdf_text(path: str | Path) -> str:
-    reader = PdfReader(str(path))
-    pages = [page.extract_text() or "" for page in reader.pages]
-    return "\n".join(pages).strip()
-
-
-def split_text(text: str, chunk_size: int = 4000) -> list[str]:
-    return [text[index : index + chunk_size] for index in range(0, len(text), chunk_size)]
+def extract_and_chunk_pdf(file_bytes: bytes, chunk_size: int = 1000) -> list[str]:
+    reader = PdfReader(BytesIO(file_bytes))
+    full_text = ""
+    for page in reader.pages:
+        text = page.extract_text()
+        if text:
+            full_text += text + "\n"
+            
+    chunks = [full_text[i:i+chunk_size] for i in range(0, len(full_text), chunk_size)]
+    return chunks

@@ -1,10 +1,21 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-
-def main_menu_keyboard() -> ReplyKeyboardMarkup:
-    keyboard = [
-        [KeyboardButton(text="Сегодняшний урок"), KeyboardButton(text="План обучения")],
-        [KeyboardButton(text="Спросить ИИ"), KeyboardButton(text="Прогресс")],
-        [KeyboardButton(text="Практика"), KeyboardButton(text="Настройки")],
-    ]
-    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+def get_main_menu(role: str = "student") -> ReplyKeyboardMarkup:
+    """Главное меню для студента или администратора"""
+    if role == "admin":
+        buttons = [
+            [KeyboardButton(text="📚 Управление программами"), KeyboardButton(text="📄 Загрузить PDF")],
+            [KeyboardButton(text="👥 Список студентов"), KeyboardButton(text="📊 Аналитика")]
+        ]
+    else:
+        buttons = [
+            [KeyboardButton(text="📖 Сегодняшний урок"), KeyboardButton(text="🎯 Создать план обучения")],
+            [KeyboardButton(text="❓ Задать вопрос AI"), KeyboardButton(text="📊 Мой прогресс")],
+            [KeyboardButton(text="📝 Пробный экзамен")]
+        ]
+    
+    return ReplyKeyboardMarkup(
+        keyboard=buttons,
+        resize_keyboard=True,
+        persistent=True
+    )
