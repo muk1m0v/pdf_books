@@ -14,8 +14,9 @@ dp = Dispatcher()
 async def main():
     print(lblue + 'Bot working ■■■■■■■■■■■■■■■■ 100%' + reset)
 
-    init_tables()
-    await dp.include_router(router=router)
+    dp.include_router(router=router)
+    await init_tables()
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
     asyncio.run(main())
