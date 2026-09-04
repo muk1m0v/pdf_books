@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
 
@@ -42,7 +42,7 @@ async def cmd_mybooks(message: Message):
     text_lines = ["Твои книги:\n"]
     for b in books:
         text_lines.append(f"#{b['id']} — {b['title']} ({b['uploaded_at'].strftime('%d.%m.%Y')})")
-    text_lines.append("\nЧтобы сделать книгу активной для вопросов, напиши: /use <номер>")
+    text_lines.append("\nЧтобы сделать книгу активной для вопросов, напиши: /use (номер)")
 
     await message.answer("\n".join(text_lines))
 
@@ -53,7 +53,7 @@ async def cmd_use(message: Message):
     parts = message.text.split()
 
     if len(parts) != 2 or not parts[1].isdigit():
-        await message.answer("Использование: /use <номер книги> (посмотреть номера — /mybooks)")
+        await message.answer("Использование: /use (номер книги) — посмотреть номера: /mybooks")
         return
 
     book_id = int(parts[1])
