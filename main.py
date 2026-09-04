@@ -7,7 +7,7 @@ from aiogram.enums import ParseMode
 
 from config import BOT_TOKEN
 import database as db
-from handlers import start, upload, qa
+from handlers import start, upload, admin, qa
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,7 +18,8 @@ async def main():
 
     dp.include_router(start.router)
     dp.include_router(upload.router)
-    dp.include_router(qa.router)
+    dp.include_router(admin.router)
+    dp.include_router(qa.router)  # этот роутер должен идти последним — ловит весь текст
 
     await db.init_pool()
     try:

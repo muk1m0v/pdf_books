@@ -15,7 +15,6 @@ async def init_pool():
         password=DB_PASS,
     )
     async with pool.acquire() as conn:
-        await conn.execute("DROP TABLE IF EXISTS active_book, books, users CASCADE;")
         await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS users (
@@ -37,6 +36,7 @@ async def init_pool():
             );
             """
         )
+        # Запоминаем, с какой книгой пользователь сейчас "работает" (последняя загруженная)
         await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS active_book (
@@ -71,6 +71,7 @@ async def save_book(user_id: int, title: str, content: str) -> int:
             user_id, title, content,
         )
         book_id = row["id"]
+        # делаем эту книгу активной для вопросов
         await conn.execute(
             """
             INSERT INTO active_book (user_id, book_id) VALUES ($1, $2)
@@ -101,6 +102,19 @@ async def get_user_books(user_id: int):
             "SELECT id, title, uploaded_at FROM books WHERE user_id = $1 ORDER BY uploaded_at DESC",
             user_id,
         )
+
+
+async def get_stats() -> dict:
+    async with pool.acquire() as conn:
+        users_count = await conn.fetchval("SELECT COUNT(*) FROM users")
+        books_count = await conn.fetchval("SELECT COUNT(*) FROM books")
+        return {"users": users_count, "books": books_count}
+
+
+async def get_all_user_tg_ids() -> list[int]:
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("SELECT tg_id FROM users")
+        return [r["tg_id"] for r in rows]
 
 
 async def set_active_book(user_id: int, book_id: int):
