@@ -1,22 +1,32 @@
 import asyncio
-from os import getenv
+import logging
+
 from aiogram import Bot, Dispatcher
-from dotenv import load_dotenv
-from color.style import *
-from handlers.route import router
-from database.db import init_tables
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 
-load_dotenv()
-bot = Bot(token=getenv('BOT_TOKEN'))
+from config import BOT_TOKEN
+import handlers.database as db
+from handlers import start, upload, qa
 
-dp = Dispatcher()
+logging.basicConfig(level=logging.INFO)
+
 
 async def main():
-    print(lblue + 'Bot working ■■■■■■■■■■■■■■■■ 100%' + reset)
+    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    dp = Dispatcher()
 
-    dp.include_router(router=router)
-    await init_tables()
-    await dp.start_polling(bot)
+    dp.include_router(start.router)
+    dp.include_router(upload.router)
+    dp.include_router(qa.router)  # этот роутер должен идти последним — ловит весь текст
 
-if __name__ == '__main__':
+    await db.init_pool()
+    try:
+        await bot.delete_webhook(drop_pending_updates=True)
+        await dp.start_polling(bot)
+    finally:
+        await db.close_pool()
+
+
+if __name__ == "__main__":
     asyncio.run(main())
