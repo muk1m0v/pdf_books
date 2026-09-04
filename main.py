@@ -18,7 +18,7 @@ async def main():
 
     dp.include_router(start.router)
     dp.include_router(upload.router)
-    dp.include_router(qa.router)  # этот роутер должен идти последним — ловит весь текст
+    dp.include_router(qa.router)
 
     await db.init_pool()
     try:
