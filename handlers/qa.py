@@ -1,6 +1,5 @@
 from aiogram import Router, F
 from aiogram.types import Message
-from aiogram.filters import CommandStart
 
 import database as db
 from ai_service import ask_about_book
