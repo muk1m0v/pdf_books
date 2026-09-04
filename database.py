@@ -15,6 +15,7 @@ async def init_pool():
         password=DB_PASS,
     )
     async with pool.acquire() as conn:
+        await conn.execute("DROP TABLE IF EXISTS active_book, books, users CASCADE;")
         await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS users (
