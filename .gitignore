@@ -1,7 +1,5 @@
-# Environment
 .env
 
-# Python
 .venv/
 __pycache__/
 *.py[cod]
@@ -9,30 +7,25 @@ __pycache__/
 *.so
 .Python
 
-# Virtual environments
 venv/
 env/
 
-# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Distribution / packaging
 build/
 dist/
 *.egg-info/
 *.egg
 
-# Testing / coverage
+
 .coverage
 .pytest_cache/
 
-# Logs
 *.log
