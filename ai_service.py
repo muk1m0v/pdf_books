@@ -1,12 +1,9 @@
 import aiohttp
 from config import GEMINI_API_KEY
 
-# Если модель устарела/переименована — посмотри актуальный список на
-# https://ai.google.dev/gemini-api/docs/models
 MODEL = "gemini-2.0-flash"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 
-# Сколько символов текста книги отдаём модели за раз (грубое ограничение под контекст)
 MAX_CONTEXT_CHARS = 25000
 
 
