@@ -1,5 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message
+from aiogram.enums import ParseMode
+from aiogram.exceptions import TelegramBadRequest
 
 import database as db
 from ai_service import ask_about_book
@@ -20,4 +22,7 @@ async def handle_question(message: Message):
 
     answer = await ask_about_book(message.text, book["title"], book["content"])
 
-    await thinking_msg.edit_text(answer)
+    try:
+        await thinking_msg.edit_text(answer, parse_mode=ParseMode.MARKDOWN)
+    except TelegramBadRequest:
+        await thinking_msg.edit_text(answer, parse_mode=None)
