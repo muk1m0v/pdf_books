@@ -6,7 +6,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from config import BOT_TOKEN
-import handlers.database as db
+import database as db
 from handlers import start, upload, qa
 
 logging.basicConfig(level=logging.INFO)

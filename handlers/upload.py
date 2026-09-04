@@ -1,7 +1,7 @@
 from aiogram import Router, F, Bot
 from aiogram.types import Message
 
-import handlers.database as db
+import database as db
 from pdf_utils import extract_text_from_pdf
 
 router = Router()
