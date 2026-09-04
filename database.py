@@ -37,7 +37,6 @@ async def init_pool():
             );
             """
         )
-        # Запоминаем, с какой книгой пользователь сейчас "работает" (последняя загруженная)
         await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS active_book (
@@ -72,7 +71,6 @@ async def save_book(user_id: int, title: str, content: str) -> int:
             user_id, title, content,
         )
         book_id = row["id"]
-        # делаем эту книгу активной для вопросов
         await conn.execute(
             """
             INSERT INTO active_book (user_id, book_id) VALUES ($1, $2)
