@@ -2,25 +2,9 @@ import aiohttp
 from config import GEMINI_API_KEY
 
 MODEL = "gemini-3.6-flash"
-API_URL = "https://generativelanguage.googleapis.com/v1beta2/interactions"
+API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 
 MAX_CONTEXT_CHARS = 25000
-
-
-def _extract_text(data: dict) -> str | None:
-    """Достаёт текст ответа модели из структуры Interactions API."""
-    # На случай если появится удобное поле верхнего уровня
-    if data.get("output_text"):
-        return data["output_text"]
-
-    parts = []
-    for step in data.get("steps", []):
-        if step.get("type") == "model_output":
-            for block in step.get("content", []):
-                if block.get("type") == "text" and block.get("text"):
-                    parts.append(block["text"])
-
-    return "\n".join(parts) if parts else None
 
 
 async def ask_about_book(question: str, book_title: str, book_text: str) -> str:
@@ -34,8 +18,9 @@ async def ask_about_book(question: str, book_title: str, book_text: str) -> str:
     )
 
     payload = {
-        "model": MODEL,
-        "input": prompt,
+        "contents": [
+            {"role": "user", "parts": [{"text": prompt}]}
+        ]
     }
 
     headers = {
@@ -50,14 +35,17 @@ async def ask_about_book(question: str, book_title: str, book_text: str) -> str:
             headers=headers,
             timeout=aiohttp.ClientTimeout(total=60),
         ) as resp:
-            data = await resp.json()
+            raw = await resp.text()
 
             if resp.status != 200:
-                error_msg = data.get("error", {}).get("message", str(data))
-                return f"Ошибка AI API ({resp.status}): {error_msg}"
+                return f"Ошибка AI API ({resp.status}): {raw[:300]}"
 
-            text = _extract_text(data)
-            if text:
-                return text
+            try:
+                data = await resp.json(content_type=None)
+            except Exception:
+                return f"Не удалось разобрать ответ AI API. Сырой ответ: {raw[:300]}"
 
-            return "Не удалось получить ответ от AI. Попробуй переформулировать вопрос."
+            try:
+                return data["candidates"][0]["content"]["parts"][0]["text"]
+            except (KeyError, IndexError, TypeError):
+                return "Не удалось получить ответ от AI. Попробуй переформулировать вопрос."
